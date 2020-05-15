@@ -9,12 +9,15 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import br.com.douglaswordell.dwbudget.entity.converter.TipoOperacaoConverter;
+
 @Entity
 public class Categoria {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long idCategoria;
+	@Column(name = "id_categoria")
+	private Long id;
 
 	@NotEmpty
 	@Column(length = 100, nullable = false)
@@ -62,12 +65,12 @@ public class Categoria {
 		this.tipoOperacao = tipoOperacao;
 	}
 
-	public Long getIdCategoria() {
-		return idCategoria;
+	public Long getId() {
+		return id;
 	}
 
-	public void setIdCategoria(Long idCategoria) {
-		this.idCategoria = idCategoria;
+	public void setId(Long idCategoria) {
+		this.id = idCategoria;
 	}
 
 }

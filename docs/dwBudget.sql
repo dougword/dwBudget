@@ -151,7 +151,7 @@ ALTER SEQUENCE public.lancamento_id_lancamento_seq OWNED BY public.lancamento.id
 --
 
 CREATE TABLE public.projecao (
-    id_projecao bigint NOT NULL,
+    id_projecao bigserial NOT NULL,
     item character varying(100) NOT NULL,
     dia_vencimento smallint,
     valor numeric(9,2) NOT NULL,

@@ -1,7 +1,9 @@
-package br.com.douglaswordell.dwbudget.entity;
+package br.com.douglaswordell.dwbudget.entity.converter;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+
+import br.com.douglaswordell.dwbudget.entity.TipoOperacao;
 
 @Converter
 public class TipoOperacaoConverter implements AttributeConverter<TipoOperacao, String> {

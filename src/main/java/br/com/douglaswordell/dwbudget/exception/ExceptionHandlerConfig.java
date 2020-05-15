@@ -33,17 +33,7 @@ public class ExceptionHandlerConfig extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 		Map<String, String> erros = new HashMap<>();
-		if (ex.getMessage().contains("not one of the values accepted for Enum class")) {
-			String msg = ex.getMessage().substring(ex.getMessage().lastIndexOf("["));
-			if (msg.length() > 2) {
-				msg = msg.substring(2, msg.lastIndexOf("\""));
-				erros.put(msg, "valor inválido");
-			} else {
-				erros.put("erro", "Falha ao ler mensagem HTTP");
-			}
-		} else {
-			erros.put("erro", "Falha ao ler mensagem HTTP");
-		}
+		erros.put("erro", ex.getMessage());
 		return ResponseEntity.badRequest().body(erros);
 	}
 	
@@ -53,6 +43,15 @@ public class ExceptionHandlerConfig extends ResponseEntityExceptionHandler {
 	private ResponseEntity<Object> naoExistente(NaoExistenteException ex) {
 		Map<String, String> erros = new HashMap<>();
 		erros.put("erro", "Objeto não existente");
+		return ResponseEntity.badRequest().body(erros);
+	}
+	
+	@ExceptionHandler({
+		RegraNegocioException.class
+	})
+	private ResponseEntity<Object> regraNegocio(RegraNegocioException ex) {
+		Map<String, String> erros = new HashMap<>();
+		erros.put("erro", ex.getMessage());
 		return ResponseEntity.badRequest().body(erros);
 	}
 	

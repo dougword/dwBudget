@@ -8,52 +8,58 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.douglaswordell.dwbudget.entity.Categoria;
+import br.com.douglaswordell.dwbudget.entity.Projecao;
 import br.com.douglaswordell.dwbudget.exception.NaoExistenteException;
 import br.com.douglaswordell.dwbudget.exception.RegraNegocioException;
-import br.com.douglaswordell.dwbudget.repository.CategoriaRepository;
+import br.com.douglaswordell.dwbudget.repository.ProjecaoRepository;
 
 @Service
-public class CategoriaService {
+public class ProjecaoService {
 
 	@Autowired
-	private CategoriaRepository categoriaRepository;
+	private ProjecaoRepository projecaoRepository;
 
 	@Transactional
-	public Categoria inserir(Categoria categoria) {
-		if (categoria.getId() != null)
+	public Projecao inserir(Projecao projecao) {
+		if (projecao.getId() != null)
 			throw new RegraNegocioException("Id deve ser nulo para inserir");
 		
-		return categoriaRepository.save(categoria);
+		if (!projecao.isValida())
+			throw new RegraNegocioException("Projeção inválida");
+		
+		return projecaoRepository.save(projecao);
 	}
 	
 	@Transactional
-	public Categoria atualizar(Categoria categoria) {
-		if (categoria.getId() == null)
+	public Projecao atualizar(Projecao projecao) {
+		if (projecao.getId() == null)
 			throw new RegraNegocioException("Id é obrigatório para atualizar");
 		
-		return categoriaRepository.save(categoria);
+		if (!projecao.isValida())
+			throw new RegraNegocioException("Projeção inválida");
+		
+		return projecaoRepository.save(projecao);
 	}
 	
 	public void excluir(Long id) {
-		if (!categoriaRepository.existsById(id)) 
+		if (!projecaoRepository.existsById(id)) 
 			throw new NaoExistenteException("Não existe");
 		
 		try {
-			categoriaRepository.deleteById(id);
+			projecaoRepository.deleteById(id);
 		} catch(DataIntegrityViolationException e) {
 			throw new RegraNegocioException("Registro não pode ser excluído pois está em uso.");
 		}
 	}
 
 	@Transactional(readOnly = true)
-	public List<Categoria> obterLista() {
-		return categoriaRepository.findAll();
+	public List<Projecao> obterLista() {
+		return projecaoRepository.findAll();
 	}
 
 	@Transactional(readOnly = true)
-	public Optional<Categoria> obterPorId(Long id) {
-		return categoriaRepository.findById(id);
+	public Optional<Projecao> obterPorId(Long id) {
+		return projecaoRepository.findById(id);
 	}
 	
 }

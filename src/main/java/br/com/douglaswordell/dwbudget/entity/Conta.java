@@ -13,7 +13,8 @@ public class Conta {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long idConta;
+	@Column(name = "id_conta")
+	private Long id;
 
 	@NotBlank
 	@Column(length = 100, nullable = false)
@@ -47,12 +48,12 @@ public class Conta {
 		this.ativa = ativa;
 	}
 
-	public Long getIdConta() {
-		return idConta;
+	public Long getId() {
+		return id;
 	}
 	
-	public void setIdConta(Long idConta) {
-		this.idConta = idConta;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 }
