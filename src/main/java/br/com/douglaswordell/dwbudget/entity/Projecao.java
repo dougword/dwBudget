@@ -120,7 +120,7 @@ public class Projecao {
 			throw new RegraNegocioException("Período inicial deve ser informado");
 		
 		if (periodoFinal != null && periodoFinal.isBefore(periodoInicial))
-			throw new RegraNegocioException("Período final deve ser nulo ou superior ao período inicial");
+			throw new RegraNegocioException("Período final não pode ser inferior ao período inicial");
 		
 		return true;
 	}
