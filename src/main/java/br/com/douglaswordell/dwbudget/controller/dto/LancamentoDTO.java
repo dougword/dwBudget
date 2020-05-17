@@ -10,9 +10,9 @@ import lombok.Data;
 public class LancamentoDTO {
 
 	private Long id;
-	private String categoria;
-	private String conta;
-	private String itemProjecao;
+	private CategoriaMinDTO categoria;
+	private ContaMinDTO conta;
+	private ProjecaoMinDTO projecao;
 	private String item;
 	private LocalDate dataVencimento;
 	private LocalDate dataLancado;

@@ -7,8 +7,8 @@ import lombok.Data;
 
 @Data
 public class ProjecaoDTO {
-	private Long idProjecao;
-	private String categoria;
+	private Long id;
+	private CategoriaMinDTO categoria;
 	private String item;
 	private Short diaVencimento;
 	private BigDecimal valor;

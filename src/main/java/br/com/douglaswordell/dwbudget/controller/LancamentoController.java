@@ -102,8 +102,6 @@ public class LancamentoController {
 	
 	private LancamentoDTO toDTO(Lancamento lancamento) {
 		LancamentoDTO lancamentoDTO = modelMapper.map(lancamento, LancamentoDTO.class);
-		lancamentoDTO.setCategoria(lancamento.getCategoria().getDescricao());
-		lancamentoDTO.setConta(lancamento.getConta().getDescricao());		
 		return lancamentoDTO;
 	}
 	

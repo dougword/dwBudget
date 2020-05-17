@@ -94,7 +94,6 @@ public class ProjecaoController {
 	
 	private ProjecaoDTO toDTO(Projecao projecao) {
 		ProjecaoDTO projecaoDTO = modelMapper.map(projecao, ProjecaoDTO.class);
-		projecaoDTO.setCategoria(projecao.getCategoria().getDescricao());
 		return projecaoDTO;
 	}
 	
