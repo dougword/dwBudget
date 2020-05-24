@@ -8,6 +8,12 @@ import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.StringMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,14 +44,23 @@ public class LancamentoController {
 
 	@Autowired
 	private LancamentoService lancamentoService;
+//	
+//	@GetMapping
+//	@ResponseStatus(HttpStatus.OK)
+//	public List<LancamentoDTO> obterLista() {
+//		List<Lancamento> lancamentos = lancamentoService.obterLista();
+//		return toDTO(lancamentos);
+//	}
 	
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public List<LancamentoDTO> obterLista() {
-		List<Lancamento> lancamentos = lancamentoService.obterLista();
+	public Page<LancamentoDTO> obterLista(LancamentoInDTO filtro, Pageable pageable) {
+		Lancamento lancamentoFiltro = fromDTO(filtro); 
+		Example<Lancamento> example = Example.of(lancamentoFiltro, ExampleMatcher.matching().withIgnoreCase().withIgnoreNullValues().withStringMatcher(StringMatcher.CONTAINING));
+		Page<Lancamento> lancamentos = lancamentoService.obterLista(example, pageable);
 		return toDTO(lancamentos);
 	}
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<LancamentoDTO> obterPorId(@PathVariable Long id) {
 		Optional<Lancamento> lancamento = lancamentoService.obterPorId(id);
@@ -105,11 +120,19 @@ public class LancamentoController {
 		return lancamentoDTO;
 	}
 	
-	private List<LancamentoDTO> toDTO(List<Lancamento> lancamentos) {
-		return lancamentos
-				.stream()
-				.map(lancamento -> toDTO(lancamento))
-				.collect(Collectors.toList());
+//	private List<LancamentoDTO> toDTO(List<Lancamento> lancamentos) {
+//		return lancamentos
+//				.stream()
+//				.map(lancamento -> toDTO(lancamento))
+//				.collect(Collectors.toList());
+//	}
+	
+	private Page<LancamentoDTO> toDTO(Page<Lancamento> lancamentos) {
+		List<LancamentoDTO> listaDTO = lancamentos
+			.stream()
+			.map(lancamento -> toDTO(lancamento))
+			.collect(Collectors.toList());
+		return new PageImpl<>(listaDTO, lancamentos.getPageable(), lancamentos.getTotalElements());
 	}
 
 }

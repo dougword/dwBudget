@@ -5,6 +5,9 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +58,11 @@ public class LancamentoService {
 	@Transactional(readOnly = true)
 	public List<Lancamento> obterLista() {
 		return lancamentoRepository.findAll();
+	}
+	
+	@Transactional(readOnly = true)
+	public Page<Lancamento> obterLista(Example<Lancamento> example, Pageable pageable) {
+		return lancamentoRepository.findAll(example, pageable);
 	}
 
 	@Transactional(readOnly = true)
