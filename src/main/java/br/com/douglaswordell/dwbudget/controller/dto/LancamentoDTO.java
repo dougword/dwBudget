@@ -3,6 +3,7 @@ package br.com.douglaswordell.dwbudget.controller.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import br.com.douglaswordell.dwbudget.controller.dto.categoria.CategoriaMinDTO;
 import br.com.douglaswordell.dwbudget.entity.TipoStatus;
 import lombok.Data;
 
