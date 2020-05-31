@@ -1,18 +1,14 @@
 package br.com.douglaswordell.dwbudget.controller;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.ExampleMatcher.StringMatcher;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,23 +23,21 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.douglaswordell.dwbudget.DwBudgetApplication;
-import br.com.douglaswordell.dwbudget.controller.dto.LancamentoDTO;
-import br.com.douglaswordell.dwbudget.controller.dto.LancamentoInDTO;
-import br.com.douglaswordell.dwbudget.entity.Categoria;
-import br.com.douglaswordell.dwbudget.entity.Conta;
+import br.com.douglaswordell.dwbudget.controller.dto.lancamento.LancamentoConverter;
+import br.com.douglaswordell.dwbudget.controller.dto.lancamento.LancamentoDTO;
+import br.com.douglaswordell.dwbudget.controller.dto.lancamento.LancamentoInDTO;
 import br.com.douglaswordell.dwbudget.entity.Lancamento;
-import br.com.douglaswordell.dwbudget.entity.Projecao;
 import br.com.douglaswordell.dwbudget.service.LancamentoService;
 
 @RestController
 @RequestMapping(DwBudgetApplication.API_V1 + "lancamento")
 public class LancamentoController {
-	
-	@Autowired
-	private ModelMapper modelMapper;
 
 	@Autowired
 	private LancamentoService lancamentoService;
+	
+	@Autowired
+	private LancamentoConverter converter;
 //	
 //	@GetMapping
 //	@ResponseStatus(HttpStatus.OK)
@@ -55,10 +49,10 @@ public class LancamentoController {
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
 	public Page<LancamentoDTO> obterLista(LancamentoInDTO filtro, Pageable pageable) {
-		Lancamento lancamentoFiltro = fromDTO(filtro); 
+		Lancamento lancamentoFiltro = converter.fromDTO(filtro); 
 		Example<Lancamento> example = Example.of(lancamentoFiltro, ExampleMatcher.matching().withIgnoreCase().withIgnoreNullValues().withStringMatcher(StringMatcher.CONTAINING));
 		Page<Lancamento> lancamentos = lancamentoService.obterLista(example, pageable);
-		return toDTO(lancamentos);
+		return converter.toDTO(lancamentos);
 	}
 
 	@GetMapping("/{id}")
@@ -67,27 +61,27 @@ public class LancamentoController {
 		if (!lancamento.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		LancamentoDTO lancamentoDTO = toDTO(lancamento.get());
+		LancamentoDTO lancamentoDTO = converter.toDTO(lancamento.get());
 		return ResponseEntity.ok(lancamentoDTO);
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public LancamentoDTO inserir(@Valid @RequestBody LancamentoInDTO lancamentoInDTO) {
-		Lancamento lancamento = fromDTO(lancamentoInDTO);
+		Lancamento lancamento = converter.fromDTO(lancamentoInDTO);
 		lancamento = lancamentoService.inserir(lancamento);
 		lancamento = lancamentoService.obterPorId(lancamento.getId()).get();
-		LancamentoDTO lancamentoDTO = toDTO(lancamento);
+		LancamentoDTO lancamentoDTO = converter.toDTO(lancamento);
 		return lancamentoDTO;
 	}
 	
 	@PutMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public LancamentoDTO atualizar(@Valid @RequestBody LancamentoInDTO lancamentoInDTO, @PathVariable Long id) {
-		Lancamento lancamento = fromDTO(lancamentoInDTO);
+		Lancamento lancamento = converter.fromDTO(lancamentoInDTO);
 		lancamento.setId(id);
 		lancamento = lancamentoService.atualizar(lancamento);
-		LancamentoDTO lancamentoDTO = toDTO(lancamento);
+		LancamentoDTO lancamentoDTO = converter.toDTO(lancamento);
 		return lancamentoDTO;
 	}
 	
@@ -99,40 +93,6 @@ public class LancamentoController {
 		}
 		lancamentoService.excluir(id);
 		return ResponseEntity.noContent().build();
-	}
-	
-	private Lancamento fromDTO(LancamentoInDTO lancamentoInDTO) {
-		Lancamento lancamento = modelMapper.map(lancamentoInDTO, Lancamento.class);
-		lancamento.setId(null);
-		lancamento.setCategoria(new Categoria());
-		lancamento.getCategoria().setId(lancamentoInDTO.getIdCategoria());
-		lancamento.setConta(new Conta());
-		lancamento.getConta().setId(lancamentoInDTO.getIdConta());
-		if (lancamentoInDTO.getIdProjecao() != null) {
-			lancamento.setProjecao(new Projecao());
-			lancamento.getProjecao().setId(lancamentoInDTO.getIdProjecao()); 
-		}
-		return lancamento;
-	}
-	
-	private LancamentoDTO toDTO(Lancamento lancamento) {
-		LancamentoDTO lancamentoDTO = modelMapper.map(lancamento, LancamentoDTO.class);
-		return lancamentoDTO;
-	}
-	
-//	private List<LancamentoDTO> toDTO(List<Lancamento> lancamentos) {
-//		return lancamentos
-//				.stream()
-//				.map(lancamento -> toDTO(lancamento))
-//				.collect(Collectors.toList());
-//	}
-	
-	private Page<LancamentoDTO> toDTO(Page<Lancamento> lancamentos) {
-		List<LancamentoDTO> listaDTO = lancamentos
-			.stream()
-			.map(lancamento -> toDTO(lancamento))
-			.collect(Collectors.toList());
-		return new PageImpl<>(listaDTO, lancamentos.getPageable(), lancamentos.getTotalElements());
 	}
 
 }

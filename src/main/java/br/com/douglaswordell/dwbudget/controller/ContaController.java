@@ -2,11 +2,9 @@ package br.com.douglaswordell.dwbudget.controller;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +19,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.douglaswordell.dwbudget.DwBudgetApplication;
-import br.com.douglaswordell.dwbudget.controller.dto.ContaDTO;
-import br.com.douglaswordell.dwbudget.controller.dto.ContaInDTO;
+import br.com.douglaswordell.dwbudget.controller.dto.conta.ContaConverter;
+import br.com.douglaswordell.dwbudget.controller.dto.conta.ContaDTO;
+import br.com.douglaswordell.dwbudget.controller.dto.conta.ContaInDTO;
 import br.com.douglaswordell.dwbudget.entity.Conta;
 import br.com.douglaswordell.dwbudget.service.ContaService;
 
@@ -31,16 +30,16 @@ import br.com.douglaswordell.dwbudget.service.ContaService;
 public class ContaController {
 	
 	@Autowired
-	private ModelMapper modelMapper;
-
-	@Autowired
 	private ContaService contaService;
+	
+	@Autowired
+	private ContaConverter converter;
 	
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
 	public List<ContaDTO> obterLista() {
 		List<Conta> contas = contaService.obterLista();
-		return toDTO(contas);
+		return converter.toDTO(contas);
 	}
 	
 	@GetMapping("/{id}")
@@ -49,26 +48,26 @@ public class ContaController {
 		if (!conta.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		ContaDTO contaDTO = toDTO(conta.get());
+		ContaDTO contaDTO = converter.toDTO(conta.get());
 		return ResponseEntity.ok(contaDTO);
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ContaDTO inserir(@Valid @RequestBody ContaInDTO contaInDTO) {
-		Conta conta = fromDTO(contaInDTO);
+		Conta conta = converter.fromDTO(contaInDTO);
 		conta = contaService.inserir(conta);
-		ContaDTO contaDTO = toDTO(conta);
+		ContaDTO contaDTO = converter.toDTO(conta);
 		return contaDTO;
 	}
 	
 	@PutMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public ContaDTO atualizar(@Valid @RequestBody ContaInDTO contaInDTO, @PathVariable Long id) {
-		Conta conta = fromDTO(contaInDTO);
+		Conta conta = converter.fromDTO(contaInDTO);
 		conta.setId(id);
 		conta = contaService.atualizar(conta);
-		ContaDTO contaDTO = toDTO(conta);
+		ContaDTO contaDTO = converter.toDTO(conta);
 		return contaDTO;
 	}
 	
@@ -80,21 +79,6 @@ public class ContaController {
 		}
 		contaService.excluir(id);
 		return ResponseEntity.noContent().build();
-	}
-	
-	private Conta fromDTO(ContaInDTO contaInDTO) {
-		return modelMapper.map(contaInDTO, Conta.class);
-	}
-	
-	private ContaDTO toDTO(Conta conta) {
-		return modelMapper.map(conta, ContaDTO.class);
-	}
-	
-	private List<ContaDTO> toDTO(List<Conta> contas) {
-		return contas
-				.stream()
-				.map(conta -> toDTO(conta))
-				.collect(Collectors.toList());
 	}
 
 }

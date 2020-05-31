@@ -1,4 +1,4 @@
-package br.com.douglaswordell.dwbudget.controller.dto;
+package br.com.douglaswordell.dwbudget.controller.dto.conta;
 
 import lombok.Data;
 

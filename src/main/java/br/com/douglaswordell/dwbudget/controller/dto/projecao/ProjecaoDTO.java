@@ -1,4 +1,4 @@
-package br.com.douglaswordell.dwbudget.controller.dto;
+package br.com.douglaswordell.dwbudget.controller.dto.projecao;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
